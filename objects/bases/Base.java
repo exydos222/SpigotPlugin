@@ -491,18 +491,16 @@ public class Base implements Externalizable {
 	}
 	
 	public static Base getBaseFromLocation(final Location location) {
-		for (final Base base : bases) {
+		for (final Base base : bases)
 			if (base.uuid.equals(Long.toString(Math.round(location.getX())) + Long.toString(Math.round(location.getY())) + Long.toString(Math.round(location.getZ()))))
 				return base;
-		}
 		return null;
 	}
 	
 	public static Base getBaseFromName(final String name) {
-		for (final Base base : bases) {
+		for (final Base base : bases)
 			if (base.name != null && base.name.equals(name))
 				return base;
-		}
 		return null;
 	}
 	

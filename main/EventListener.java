@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -60,6 +62,8 @@ import objects.bases.Base;
 import objects.bases.BaseMember;
 
 public class EventListener implements Listener {
+	
+	private static HashSet<Vector> lootedPlacedCars = new HashSet<>();
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(final PlayerJoinEvent e)
@@ -302,6 +306,60 @@ public class EventListener implements Listener {
 				model.setInvisible(true);
 				Cars.CarData.put(car.getUniqueId(), new CarData(model.getUniqueId()));
 				e.setCancelled(true);
+			} else if (e.getItem() != null && e.getItem().getType() == Material.IRON_SWORD) {
+				switch (e.getClickedBlock().getType()) {
+				case POLISHED_GRANITE:
+				case POLISHED_GRANITE_SLAB:
+				case POLISHED_GRANITE_STAIRS:
+				case ANVIL:
+				case WARPED_TRAPDOOR:
+				case GRAY_CARPET:
+				case BROWN_CARPET:
+				case YELLOW_STAINED_GLASS_PANE:
+				case CHISELED_STONE_BRICKS:
+				case BROWN_CONCRETE:
+					final int minX = (int)Math.round(e.getPlayer().getLocation().getX() - 4);
+					final int maxX = (int)Math.round(e.getPlayer().getLocation().getX() + 4);
+					final int minY = (int)Math.round(e.getPlayer().getLocation().getY() - 4);
+					final int maxY = (int)Math.round(e.getPlayer().getLocation().getY() + 4);
+					final int minZ = (int)Math.round(e.getPlayer().getLocation().getZ() - 4);
+					final int maxZ = (int)Math.round(e.getPlayer().getLocation().getZ() + 4);
+					for (int x = minX; x < maxX; x++)
+						for (int y = minY; y < maxY; y++)
+							for (int z = minZ; z < maxZ; z++)
+								if (e.getPlayer().getWorld().getBlockAt(x, y, z).getType() == Material.ANVIL) {
+									e.setCancelled(true);
+									final Vector vector = new Vector(x, y, z);
+									if (lootedPlacedCars.contains(vector)) {
+										e.getPlayer().sendMessage("This car has already been looted.");
+										return;
+									}
+									lootedPlacedCars.add(vector);
+									e.getPlayer().sendMessage("Breaking into car...");
+									e.getPlayer().setCooldown(Material.IRON_SWORD, 60);
+									e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 1, .05f);
+									Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+					                    @Override
+					                    public void run() {
+					                    	final ItemStack metal = new ItemStack(Material.ORANGE_DYE);
+											metal.setAmount((int)Math.round(Math.random() * 2) + 4);
+											if (e.getPlayer().getInventory().firstEmpty() == -1)
+												e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), metal);
+											else
+												e.getPlayer().getInventory().addItem(metal);
+											e.getPlayer().sendMessage("You broke into the car and got " + metal.getAmount() + " metal.");
+					                    }
+					                }, 60);
+									Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+					                    @Override
+					                    public void run() {
+					                    	lootedPlacedCars.remove(vector);
+					                    }
+					                }, Math.round(Math.random() * 4800) + 9600);
+									return;
+								}
+					break;
+				}
 			} else if (e.getClickedBlock().getBlockData().getMaterial() == Material.SEA_LANTERN || e.getClickedBlock().getBlockData().getMaterial() == Material.JACK_O_LANTERN || e.getClickedBlock().getBlockData().getMaterial() == Material.GLOWSTONE) {
 	        	final Base base = Base.getBaseFromLocation(e.getClickedBlock().getLocation());
 	        	for (final BaseMember member : base.members)
@@ -440,7 +498,7 @@ public class EventListener implements Listener {
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createInventory());
 		                    }
-		                }, 1L);
+		                }, 1);
 	    			} else if (title.equals("Confirm Base Dissolution")) {
 	    				Bukkit.getServer().dispatchCommand(e.getPlayer(), "base undisband " + base.name);
 	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
@@ -448,28 +506,28 @@ public class EventListener implements Listener {
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createInventory());
 		                    }
-		                }, 1L);
+		                }, 1);
 	    			} else if (title.equals("Remove Members") || title.startsWith("Add Members") || title.equals("Change Member Rank")) {
 	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createManagementInventory());
 		                    }
-		                }, 1L);
+		                }, 1);
 	    			} else if (title.contains("Base Rank")) {
 	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createSetRankInventory());
 		                    }
-		                }, 1L);
+		                }, 1);
 	    			} else if (title.equals("Materials") || title.equals("Money")) {
 	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createResourcesInventory());
 		                    }
-		                }, 1L);
+		                }, 1);
 	    			}
 	    		} else if (e.getView().getTitle().equals(ChatColor.AQUA + base.name))
 	    			for (short i = 0; i < e.getPlayer().getInventory().getContents().length; i++) {
