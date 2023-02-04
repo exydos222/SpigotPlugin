@@ -433,6 +433,7 @@ public class EventListener implements Listener {
         		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
+			e.getBlock().setType(minedBlockData.oldMaterial);
                     	minedBlocks.remove(minedBlockData);
                     }
                 }, 72000);
