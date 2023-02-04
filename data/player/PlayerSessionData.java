@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitTask;
 
 import objects.bases.Base;
 import objects.bases.BaseInvite;
@@ -21,6 +22,7 @@ public class PlayerSessionData {
 	public Location schematicPosition1, schematicPosition2;
 	public float vehicleAcceleration;
 	public UUID carDriver, oldCarDriver;
+	public BukkitTask previousCombatLogTask;
 	
 	public PlayerSessionData(final PlayerSaveData data) {
 		this.savedata = data;

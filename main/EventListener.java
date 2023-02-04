@@ -52,6 +52,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 
+import data.blocks.MinedBlockData;
 import data.cars.CarData;
 import data.cars.Cars;
 import data.player.PlayerSaveData;
@@ -64,6 +65,8 @@ import objects.bases.BaseMember;
 public class EventListener implements Listener {
 	
 	private static HashSet<Vector> lootedPlacedCars = new HashSet<>();
+	
+	public static HashSet<MinedBlockData> minedBlocks = new HashSet<>();
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(final PlayerJoinEvent e)
@@ -360,7 +363,7 @@ public class EventListener implements Listener {
 								}
 					break;
 				}
-			} else if (e.getClickedBlock().getBlockData().getMaterial() == Material.SEA_LANTERN || e.getClickedBlock().getBlockData().getMaterial() == Material.JACK_O_LANTERN || e.getClickedBlock().getBlockData().getMaterial() == Material.GLOWSTONE) {
+			} else if (e.getClickedBlock().getType() == Material.SEA_LANTERN || e.getClickedBlock().getType() == Material.JACK_O_LANTERN || e.getClickedBlock().getType() == Material.GLOWSTONE) {
 	        	final Base base = Base.getBaseFromLocation(e.getClickedBlock().getLocation());
 	        	for (final BaseMember member : base.members)
 	        		if (member.uuid.equals(e.getPlayer().getUniqueId())) {
@@ -402,14 +405,40 @@ public class EventListener implements Listener {
         }
     }
 	
+	@SuppressWarnings({ "incomplete-switch", "deprecation" })
 	@EventHandler
     public void onBlockBreak(final BlockBreakEvent e) {
-		if (!e.getPlayer().isOp()) {
+		if (!e.getPlayer().isOp())
         	e.setCancelled(true);
-        	return;
-		}
-        if (e.getBlock().getBlockData().getMaterial() == Material.SEA_LANTERN || e.getBlock().getBlockData().getMaterial() == Material.JACK_O_LANTERN || e.getBlock().getBlockData().getMaterial() == Material.GLOWSTONE)
-        	Base.getBaseFromLocation(e.getBlock().getLocation()).removeBaseAndHologram();
+        switch (e.getBlock().getType()) {
+        case SEA_LANTERN:
+        case JACK_O_LANTERN:
+        case GLOWSTONE:
+        	if (e.getPlayer().isOp()) {
+        		final Base base = Base.getBaseFromLocation(e.getBlock().getLocation());
+        		e.getPlayer().sendMessage("You have admin-removed the base named \'" + base.name + "\', owned by player " + Bukkit.getOfflinePlayer(base.owner).getName() + '.');
+        		base.removeBaseAndHologram();
+        	} else
+				e.getPlayer().sendMessage("You must be OP to admin-remove a player's base.");
+        	break;
+        case OAK_WOOD:
+        case BIRCH_WOOD:
+        case SPRUCE_WOOD:
+        	if (e.getPlayer().getItemInHand().getType() == Material.WOODEN_AXE || e.getPlayer().getItemInHand().getType() == Material.IRON_AXE) {
+        		e.setCancelled(true);
+        		final MinedBlockData minedBlockData = new MinedBlockData(e.getBlock().getType(), e.getBlock().getLocation());
+        		minedBlocks.add(minedBlockData);
+        		e.getBlock().setType(Material.BIRCH_PLANKS);
+        		e.getPlayer().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.BLUE_DYE));
+        		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+                    @Override
+                    public void run() {
+                    	minedBlocks.remove(minedBlockData);
+                    }
+                }, 72000);
+        	}
+        	break;
+        }
     }
 	
     @EventHandler
@@ -421,7 +450,9 @@ public class EventListener implements Listener {
 	    	else {
 	    		final PlayerSessionData data = PlayerSessionData.PlayerData.get(e.getEntity().getUniqueId());
 	    		data.combatLogged = true;
-	    		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    		if (data.previousCombatLogTask != null)
+	    			data.previousCombatLogTask.cancel();
+	    		data.previousCombatLogTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
                     	data.combatLogged = false;

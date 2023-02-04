@@ -17,6 +17,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import commands.bases.BaseCommand;
 import commands.schematics.SchematicCommand;
 import commands.teams.TeamCommand;
+import data.blocks.MinedBlockData;
 import data.cars.CarData;
 import data.cars.Cars;
 import data.player.PlayerSessionData;
@@ -142,6 +143,8 @@ public class Main extends JavaPlugin {
     
     @Override
     public void onDisable() {
+    	for (final MinedBlockData minedBlockData : EventListener.minedBlocks)
+    		minedBlockData.location.getWorld().getBlockAt(minedBlockData.location).setType(minedBlockData.oldMaterial);
     	for (final Player player : getServer().getOnlinePlayers()) {
     		final PlayerSessionData data = PlayerSessionData.PlayerData.get(player.getUniqueId());
     		if (data.carDriver != null) {
