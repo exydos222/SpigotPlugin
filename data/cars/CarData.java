@@ -7,11 +7,11 @@ import java.util.UUID;
 @SuppressWarnings("serial")
 public class CarData implements Serializable {
 
-	public UUID model;
-	public ArrayList<UUID> passengers = new ArrayList<>();
-	
-	public CarData(final UUID model) {
-		this.model = model;
-	}
-	
+    public UUID model;
+    public ArrayList<UUID> passengers = new ArrayList<>();
+    
+    public CarData(final UUID model) {
+        this.model = model;
+    }
+    
 }

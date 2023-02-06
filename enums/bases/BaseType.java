@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public enum BaseType implements Serializable {
 
-	SMALL, MEDIUM, FORT;
-	
+    SMALL, MEDIUM, FORT;
+    
 }

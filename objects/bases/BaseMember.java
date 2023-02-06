@@ -7,13 +7,13 @@ import enums.bases.BaseRank;
 
 @SuppressWarnings("serial")
 public class BaseMember implements Serializable {
-	
-	public BaseRank rank;
-	public UUID uuid;
-	
-	public BaseMember(final BaseRank rank, final UUID uuid) {
-		this.rank = rank;
-		this.uuid = uuid;
-	}
-	
+    
+    public BaseRank rank;
+    public UUID uuid;
+    
+    public BaseMember(final BaseRank rank, final UUID uuid) {
+        this.rank = rank;
+        this.uuid = uuid;
+    }
+    
 }
