@@ -1,5 +1,4 @@
-package commands.schematics;
-
+package commands.regions;
 
 import java.io.File;
 
@@ -13,10 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import data.player.PlayerSessionData;
 import main.Main;
-import objects.schematic.Schematic;
-import objects.schematic.SchematicOperator;
+import objects.region.Region;
 
-public class SchematicCommand implements CommandExecutor {
+public class RegionCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
@@ -24,11 +22,11 @@ public class SchematicCommand implements CommandExecutor {
     		sender.sendMessage("This is an admin-only command.");
     		return true;
     	} else if (args.length == 0) {
-    		sender.sendMessage("Unknown sub-command, available:\nsave <name>\npaste <name>\ndelete <name>\nwand");
+    		sender.sendMessage("Unknown sub-command, available:\ncreate <name>\ndelete <name>\nwand");
     		return true;
     	}
     	switch (args[0].toLowerCase()) {
-    	case "save":
+    	case "create":
     	{
     		if (args.length == 1) {
         		sender.sendMessage("You did not specify a name.");
@@ -45,26 +43,18 @@ public class SchematicCommand implements CommandExecutor {
     			sender.sendMessage("These points are in seperate worlds.");
     			return true;
     		}
-    		SchematicOperator.createSchematic(args[1], data.selectionPosition1, data.selectionPosition2).saveSchematic();
-    		sender.sendMessage("Saved schematic to disk.");
+    		new Region(args[1], data.selectionPosition1, data.selectionPosition2).saveRegion();
+    		sender.sendMessage("Saved region to disk.");
     		break;
     	}
-    	case "paste":
-    		if (args.length == 1) {
-        		sender.sendMessage("You did not specify a name.");
-        		return true;
-        	}
-    		SchematicOperator.pasteSchematic(Schematic.loadSchematic(args[1]), ((Player)sender).getLocation());
-    		sender.sendMessage("Pasted schematic.");
-    		break;
     	case "delete":
     		if (args.length == 1) {
         		sender.sendMessage("You did not specify a name.");
         		return true;
         	}
-    		final File file = new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/SchematicData/" + args[1]);
+    		final File file = new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/RegionData/" + args[1]);
     		if (!file.exists()) {
-    			sender.sendMessage("That schematic does not exist.");
+    			sender.sendMessage("That region does not exist.");
     			return true;
     		}
     		file.delete();

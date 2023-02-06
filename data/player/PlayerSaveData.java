@@ -67,7 +67,7 @@ public class PlayerSaveData implements Externalizable {
 		return data;
 	}
 	
-	public static File getDataFile(UUID uuid) {
+	public static File getDataFile(final UUID uuid) {
 		return new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/PlayerData/" + uuid);
 	}
 	

@@ -19,7 +19,7 @@ public class PlayerSessionData {
 	public ArrayList<BaseInvite> activeBaseInvites = new ArrayList<>();
 	public ArrayList<Base> activeBaseDisollutionRequests = new ArrayList<>();
 	public boolean shouldRespondToInventoryCloseEvents = true, combatLogged, isDrivingCar;
-	public Location schematicPosition1, schematicPosition2;
+	public Location selectionPosition1, selectionPosition2;
 	public float vehicleAcceleration;
 	public UUID carDriver, oldCarDriver;
 	public BukkitTask previousCombatLogTask;

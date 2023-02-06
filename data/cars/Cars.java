@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import main.Main;
 
 @SuppressWarnings("serial")
@@ -19,7 +21,7 @@ public class Cars implements Serializable {
 	
 	public static void saveCars() {
 		try {
-		    final FileOutputStream fileOutputStream = new FileOutputStream(new File(Main.getPlugin(Main.class).getDataFolder() + "/CarData"));
+		    final FileOutputStream fileOutputStream = new FileOutputStream(new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/CarData"));
 		    final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		    objectOutputStream.writeObject(CarData);
 		    objectOutputStream.flush();
@@ -32,7 +34,7 @@ public class Cars implements Serializable {
 	
 	@SuppressWarnings("unchecked")
 	public static void loadCars() {
-		final File dataFile = new File(Main.getPlugin(Main.class).getDataFolder() + "/CarData");
+		final File dataFile = new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/CarData");
 		if (!dataFile.exists()) {
 			CarData = new HashMap<>();
 			return;

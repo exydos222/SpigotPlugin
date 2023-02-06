@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import data.schematic.BlockData;
 import main.Main;
 
@@ -29,7 +31,7 @@ public class Schematic implements Serializable {
 	public static Schematic loadSchematic(final String name) {
 		Schematic schematic = null;
 		try {
-		    final FileInputStream fileInputStream = new FileInputStream(new File(Main.getPlugin(Main.class).getDataFolder() + "/SchematicData/" + name));
+		    final FileInputStream fileInputStream = new FileInputStream(new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/SchematicData/" + name));
 		    final ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 		    schematic = (Schematic)objectInputStream.readObject();
 		    objectInputStream.close();
@@ -44,7 +46,7 @@ public class Schematic implements Serializable {
 	
 	public void saveSchematic() {
 		try {
-		    final FileOutputStream fileOutputStream = new FileOutputStream(new File(Main.getPlugin(Main.class).getDataFolder() + "/SchematicData/" + name));
+		    final FileOutputStream fileOutputStream = new FileOutputStream(new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/SchematicData/" + this.name));
 		    final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		    objectOutputStream.writeObject(this);
 		    objectOutputStream.flush();

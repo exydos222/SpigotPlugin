@@ -12,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import data.player.PlayerSessionData;
 import enums.bases.BaseRank;
@@ -226,7 +227,7 @@ public class BaseCommand implements CommandExecutor {
         		component.addExtra(decline);
         		final BaseInvite invite = new BaseInvite(base, player.getUniqueId());
         		data.activeBaseInvites.add(invite);
-        		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+        		Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
                         if (data.activeBaseInvites.contains(invite)) {
@@ -362,7 +363,7 @@ public class BaseCommand implements CommandExecutor {
     		sender.spigot().sendMessage(component);
     		final PlayerSessionData data = PlayerSessionData.PlayerData.get(((Player)sender).getUniqueId());
     		data.activeBaseDisollutionRequests.add(base);
-    		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+    		Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                     if (data.activeBaseDisollutionRequests.contains(base)) {

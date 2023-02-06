@@ -41,6 +41,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.PacketType;
@@ -79,7 +80,7 @@ public class EventListener implements Listener {
 				final Player player = Bukkit.getPlayer(teammate);
 				if (player == null)
 					continue;
-				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 	                @Override
 	                public void run() {
 	                	try {
@@ -177,7 +178,7 @@ public class EventListener implements Listener {
 			} catch (final InvocationTargetException ex) {
 			    ex.printStackTrace();
 			}
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	PlayerSessionData.PlayerData.get(e.getPlayer().getUniqueId()).carDriver = e.getRightClicked().getPassenger().getUniqueId();
@@ -224,7 +225,7 @@ public class EventListener implements Listener {
 			data.vehicleAcceleration = 0;
 			data.isDrivingCar = false;
 			for (final UUID uuid : data.carPassengers)
-				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
     					try {
@@ -263,7 +264,7 @@ public class EventListener implements Listener {
 			final CarData carData = Cars.CarData.get(e.getVehicle().getUniqueId());
 			e.getEntered().setPassenger(Bukkit.getEntity(carData.model));
 			for (final UUID uuid : carData.passengers)
-				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
     					try {
@@ -291,14 +292,14 @@ public class EventListener implements Listener {
 		switch (e.getAction()) {
 		case LEFT_CLICK_BLOCK:
 			if (e.getItem() != null && e.getPlayer().getGameMode() == GameMode.CREATIVE && e.getItem().getType() == Material.GOLDEN_AXE) {
-				PlayerSessionData.PlayerData.get(e.getPlayer().getUniqueId()).schematicPosition1 = e.getClickedBlock().getLocation();
+				PlayerSessionData.PlayerData.get(e.getPlayer().getUniqueId()).selectionPosition1 = e.getClickedBlock().getLocation();
 				e.getPlayer().sendMessage("You have set your first position.");
 				e.setCancelled(true);
 			}
 			break;
 		case RIGHT_CLICK_BLOCK:
 			if (e.getItem() != null && e.getPlayer().getGameMode() == GameMode.CREATIVE && e.getItem().getType() == Material.GOLDEN_AXE) {
-				PlayerSessionData.PlayerData.get(e.getPlayer().getUniqueId()).schematicPosition2 = e.getClickedBlock().getLocation();
+				PlayerSessionData.PlayerData.get(e.getPlayer().getUniqueId()).selectionPosition2 = e.getClickedBlock().getLocation();
 				e.getPlayer().sendMessage("You have set your second position.");
 				e.setCancelled(true);
 			} else if (e.getItem() != null && e.getItem().getType() == Material.NETHER_BRICK) {
@@ -341,7 +342,7 @@ public class EventListener implements Listener {
 									e.getPlayer().sendMessage("Breaking into car...");
 									e.getPlayer().setCooldown(Material.IRON_SWORD, 60);
 									e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 1, .05f);
-									Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+									Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 					                    @Override
 					                    public void run() {
 					                    	final ItemStack metal = new ItemStack(Material.ORANGE_DYE);
@@ -353,7 +354,7 @@ public class EventListener implements Listener {
 											e.getPlayer().sendMessage("You broke into the car and got " + metal.getAmount() + " metal.");
 					                    }
 					                }, 60);
-									Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+									Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 					                    @Override
 					                    public void run() {
 					                    	lootedPlacedCars.remove(vector);
@@ -430,10 +431,10 @@ public class EventListener implements Listener {
         		minedBlocks.add(minedBlockData);
         		e.getBlock().setType(Material.BIRCH_PLANKS);
         		e.getPlayer().getWorld().dropItemNaturally(e.getBlock().getLocation(), new ItemStack(Material.BLUE_DYE));
-        		Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+        		Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
-			e.getBlock().setType(minedBlockData.oldMaterial);
+                    	e.getBlock().setType(minedBlockData.oldMaterial);
                     	minedBlocks.remove(minedBlockData);
                     }
                 }, 72000);
@@ -453,7 +454,7 @@ public class EventListener implements Listener {
 	    		data.combatLogged = true;
 	    		if (data.previousCombatLogTask != null)
 	    			data.previousCombatLogTask.cancel();
-	    		data.previousCombatLogTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    		data.previousCombatLogTask = Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                     @Override
                     public void run() {
                     	data.combatLogged = false;
@@ -525,7 +526,7 @@ public class EventListener implements Listener {
 	    		if (index != -1 && e.getView().getTitle().substring(0, index).equals(ChatColor.AQUA + base.name)) {
 	    			final String title = e.getView().getTitle().substring(index + 3);
 	    			if (title.equals("Manage Members") || title.equals("Manage Resources") || title.equals("Upgrade Base")) {
-	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createInventory());
@@ -533,28 +534,28 @@ public class EventListener implements Listener {
 		                }, 1);
 	    			} else if (title.equals("Confirm Base Dissolution")) {
 	    				Bukkit.getServer().dispatchCommand(e.getPlayer(), "base undisband " + base.name);
-	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createInventory());
 		                    }
 		                }, 1);
 	    			} else if (title.equals("Remove Members") || title.startsWith("Add Members") || title.equals("Change Member Rank")) {
-	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createManagementInventory());
 		                    }
 		                }, 1);
 	    			} else if (title.contains("Base Rank")) {
-	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createSetRankInventory());
 		                    }
 		                }, 1);
 	    			} else if (title.equals("Materials") || title.equals("Money")) {
-	    				Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+	    				Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
 		                    @Override
 		                    public void run() {
 		                    	e.getPlayer().openInventory(base.createResourcesInventory());

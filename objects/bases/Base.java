@@ -971,7 +971,7 @@ public class Base implements Externalizable {
 		switch (this.level) {
 		case 1:
 			this.pasteInProgress = true;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	pasteInProgress = false;
@@ -980,7 +980,7 @@ public class Base implements Externalizable {
 			break;
 		case 2:
 			this.pasteInProgress = true;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	pasteInProgress = false;
@@ -989,7 +989,7 @@ public class Base implements Externalizable {
 			break;
 		case 3:
 			this.pasteInProgress = true;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	pasteInProgress = false;
@@ -998,7 +998,7 @@ public class Base implements Externalizable {
 			break;
 		case 4:
 			this.pasteInProgress = true;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	pasteInProgress = false;
@@ -1007,7 +1007,7 @@ public class Base implements Externalizable {
 			break;
 		case 5:
 			this.pasteInProgress = true;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	pasteInProgress = false;

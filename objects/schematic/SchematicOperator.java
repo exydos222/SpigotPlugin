@@ -19,6 +19,7 @@ import org.bukkit.block.data.type.Slab.Type;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.type.Stairs.Shape;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import data.schematic.BlockData;
 import main.Main;
@@ -81,7 +82,7 @@ public class SchematicOperator {
 			final Material material = Material.values()[block.material];
 			if (b.getType() == material || b.getType() == Material.SEA_LANTERN || b.getType() == Material.JACK_O_LANTERN || b.getType() == Material.GLOWSTONE)
 				continue;
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                 @Override
                 public void run() {
                 	if (material == Material.AIR)
@@ -141,13 +142,13 @@ public class SchematicOperator {
 		return i;
 	}
 
-	public static Schematic createSchematic(final String name, final Location schematicPosition1, final Location schematicPosition2) {
-		final int minX = (int)Math.min(schematicPosition1.getX(), schematicPosition2.getX());
-		final int maxX = (int)Math.max(schematicPosition1.getX(), schematicPosition2.getX());
-		final int minY = (int)Math.min(schematicPosition1.getY(), schematicPosition2.getY());
-		final int maxY = (int)Math.max(schematicPosition1.getY(), schematicPosition2.getY());
-		final int minZ = (int)Math.min(schematicPosition1.getZ(), schematicPosition2.getZ());
-		final int maxZ = (int)Math.max(schematicPosition1.getZ(), schematicPosition2.getZ());
+	public static Schematic createSchematic(final String name, final Location selectionPosition1, final Location selectionPosition2) {
+		final int minX = (int)Math.min(selectionPosition1.getX(), selectionPosition2.getX());
+		final int maxX = (int)Math.max(selectionPosition1.getX(), selectionPosition2.getX());
+		final int minY = (int)Math.min(selectionPosition1.getY(), selectionPosition2.getY());
+		final int maxY = (int)Math.max(selectionPosition1.getY(), selectionPosition2.getY());
+		final int minZ = (int)Math.min(selectionPosition1.getZ(), selectionPosition2.getZ());
+		final int maxZ = (int)Math.max(selectionPosition1.getZ(), selectionPosition2.getZ());
 		final int offsetX = minX + (maxX - minX) / 2;
 		final int offsetY = minY + (maxY - minY) / 2;
 		final int offsetZ = minZ + (maxZ - minZ) / 2;
@@ -155,7 +156,7 @@ public class SchematicOperator {
 		for (int x = minX; x <= maxX; x++)
 		    for (int y = minY; y <= maxY; y++)
 		        for (int z = minZ; z <= maxZ; z++)
-		        	schematic.blocks.add(new BlockData(schematicPosition1.getWorld().getBlockAt(x, y, z), x - offsetX, y - offsetY, z - offsetZ));
+		        	schematic.blocks.add(new BlockData(selectionPosition1.getWorld().getBlockAt(x, y, z), x - offsetX, y - offsetY, z - offsetZ));
 		return schematic;
 	}
 	

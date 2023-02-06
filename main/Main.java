@@ -15,6 +15,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
 import commands.bases.BaseCommand;
+import commands.regions.RegionCommand;
 import commands.schematics.SchematicCommand;
 import commands.teams.TeamCommand;
 import data.blocks.MinedBlockData;
@@ -50,6 +51,7 @@ public class Main extends JavaPlugin {
     	this.getCommand("team").setExecutor(new TeamCommand());
     	this.getCommand("base").setExecutor(new BaseCommand());
     	this.getCommand("schemdata").setExecutor(new SchematicCommand());
+    	this.getCommand("regiondata").setExecutor(new RegionCommand());
     	Cars.loadCars();
     	ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Client.STEER_VEHICLE) {
 	        @Override
