@@ -43,7 +43,9 @@ public class RegionCommand implements CommandExecutor {
     			sender.sendMessage("These points are in seperate worlds.");
     			return true;
     		}
-    		new Region(args[1], data.selectionPosition1, data.selectionPosition2).saveRegion();
+    		final Region region = new Region(args[1], data.selectionPosition1, data.selectionPosition2);
+    		region.saveRegion();
+    		Region.regions.add(region);
     		sender.sendMessage("Saved region to disk.");
     		break;
     	}
@@ -58,7 +60,7 @@ public class RegionCommand implements CommandExecutor {
     			return true;
     		}
     		file.delete();
-    		sender.sendMessage("Schematic named has been deleted.");
+    		sender.sendMessage("Region named has been deleted.");
     		break;
     	case "wand":
     		((Player)sender).getInventory().addItem(new ItemStack(Material.GOLDEN_AXE));

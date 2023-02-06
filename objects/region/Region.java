@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -17,6 +18,8 @@ import main.Main;
 @SuppressWarnings("serial")
 public class Region implements Serializable {
 
+	public static final ArrayList<Region> regions = new ArrayList<>();
+	
 	public int lowX, lowY, lowZ, highX, highY, highZ;
 	
 	public String name;
@@ -37,22 +40,6 @@ public class Region implements Serializable {
 		return true;
 	}
 	
-	public static Region loadRegion(final String name) {
-		Region region = null;
-		try {
-		    final FileInputStream fileInputStream = new FileInputStream(new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/RegionData/" + name));
-		    final ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-		    region = (Region)objectInputStream.readObject();
-		    objectInputStream.close();
-		    fileInputStream.close();
-		} catch (final IOException e) {
-		    e.printStackTrace();
-		} catch (final ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return region;
-	}
-	
 	public void saveRegion() {
 		try {
 		    final FileOutputStream fileOutputStream = new FileOutputStream(new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/RegionData/" + this.name));
@@ -63,6 +50,44 @@ public class Region implements Serializable {
 		    fileOutputStream.close();
 		} catch (final IOException e) {
 		    e.printStackTrace();
+		}
+	}
+	
+	public static boolean isInsideAnyRegion(final Player player) {
+		for (final Region region : regions)
+			if (player.getLocation().getX() < region.lowX && player.getLocation().getY() < region.lowY && player.getLocation().getZ() < region.lowZ && player.getLocation().getX() > region.highX && player.getLocation().getY() < region.highY && player.getLocation().getZ() > region.highZ)
+				continue;
+			else
+				return true;
+		return false;
+	}
+	
+	public static boolean isInsideAnyRegionWithANameStartingWith(final Player player, final String name) {
+		for (final Region region : regions)
+			if (!region.name.startsWith(name))
+				continue;
+			else if (player.getLocation().getX() < region.lowX && player.getLocation().getY() < region.lowY && player.getLocation().getZ() < region.lowZ && player.getLocation().getX() > region.highX && player.getLocation().getY() < region.highY && player.getLocation().getZ() > region.highZ)
+				continue;
+			else
+				return true;
+		return false;
+	}
+	
+	public static void loadRegions() {
+		for (final File file : new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/BaseData/").listFiles()) {
+			Region region = null;
+			try {
+			    final FileInputStream fileInputStream = new FileInputStream(file);
+			    final ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+			    region = (Region)objectInputStream.readObject();
+			    objectInputStream.close();
+			    fileInputStream.close();
+			} catch (final IOException e) {
+			    e.printStackTrace();
+			} catch (final ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			regions.add(region);
 		}
 	}
 	

@@ -27,6 +27,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import objects.bases.Base;
+import objects.region.Region;
 
 public class Main extends JavaPlugin {
 	
@@ -46,13 +47,17 @@ public class Main extends JavaPlugin {
     	file = new File(this.getDataFolder().toString() + "/SchematicData/");
     	if (!file.exists())
     		file.mkdir();
+    	file = new File(this.getDataFolder().toString() + "/RegionData/");
+    	if (!file.exists())
+    		file.mkdir();
     	Base.loadBases();
+    	Cars.loadCars();
+    	Region.loadRegions();
     	getServer().getPluginManager().registerEvents(new EventListener(), this);
     	this.getCommand("team").setExecutor(new TeamCommand());
     	this.getCommand("base").setExecutor(new BaseCommand());
     	this.getCommand("schemdata").setExecutor(new SchematicCommand());
     	this.getCommand("regiondata").setExecutor(new RegionCommand());
-    	Cars.loadCars();
     	ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Client.STEER_VEHICLE) {
 	        @Override
 	        public void onPacketReceiving(final PacketEvent e) {

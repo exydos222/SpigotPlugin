@@ -62,6 +62,7 @@ import enums.bases.BaseRank;
 import enums.bases.BaseType;
 import objects.bases.Base;
 import objects.bases.BaseMember;
+import objects.region.Region;
 
 public class EventListener implements Listener {
 	
@@ -611,6 +612,10 @@ public class EventListener implements Listener {
     	if (e.getCurrentItem() == null)
     		return;
     	if (e.getView().getTitle().startsWith("You are in ") && e.getView().getTitle().endsWith(" bases") && (e.getCurrentItem().getType() == Material.SEA_LANTERN || e.getCurrentItem().getType() == Material.JACK_O_LANTERN || e.getCurrentItem().getType() == Material.GLOWSTONE)) {
+    		if (!Region.isInsideAnyRegionWithANameStartingWith((Player)e.getWhoClicked(), "Safezone")) {
+    			e.getWhoClicked().sendMessage("You must be in a safezone to teleport to a base.");
+    			return;
+    		}
 			final Base base = Base.getBaseFromName(e.getCurrentItem().getItemMeta().getDisplayName().substring(2));
 			e.getWhoClicked().teleport(new Location(Bukkit.getWorld(base.world), base.x + 0.5f, base.y + 1, base.z + 0.5f));
 			e.getWhoClicked().sendMessage("You have teleported to the base named \'" + base.name + "\'.");

@@ -37,13 +37,13 @@ public class Base implements Externalizable {
 
 	private static final short version = 5;
 	
-	public static ArrayList<Base> bases = new ArrayList<>();
-	public static Schematic unclaimedSchematic = Schematic.loadSchematic("UnclaimedBase");
-	public static Schematic level1Base = Schematic.loadSchematic("Level1Base");
-	public static Schematic level2Base = Schematic.loadSchematic("Level2Base");
-	public static Schematic level3Base = Schematic.loadSchematic("Level3Base");
-	public static Schematic level4Base = Schematic.loadSchematic("Level4Base");
-	public static Schematic level5Base = Schematic.loadSchematic("Level5Base");
+	public static final ArrayList<Base> bases = new ArrayList<>();
+	public static final Schematic unclaimedSchematic = Schematic.loadSchematic("UnclaimedBase");
+	public static final Schematic level1Base = Schematic.loadSchematic("Level1Base");
+	public static final Schematic level2Base = Schematic.loadSchematic("Level2Base");
+	public static final Schematic level3Base = Schematic.loadSchematic("Level3Base");
+	public static final Schematic level4Base = Schematic.loadSchematic("Level4Base");
+	public static final Schematic level5Base = Schematic.loadSchematic("Level5Base");
 	
 	public ArrayList<BaseMember> members = new ArrayList<>();
 	public UUID owner, world;
@@ -567,7 +567,7 @@ public class Base implements Externalizable {
 					final ItemStack baseItem = new ItemStack(Material.SEA_LANTERN);
 					meta.setDisplayName(ChatColor.GREEN + base.name);
 					final ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base.");
+					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base. (Must be in safezone)");
 					meta.setLore(lore);
 					baseItem.setItemMeta(meta);
 					inventory.setItem(smallCount + 10, baseItem);
@@ -579,7 +579,7 @@ public class Base implements Externalizable {
 					final ItemStack baseItem = new ItemStack(Material.JACK_O_LANTERN);
 					meta.setDisplayName(ChatColor.GREEN + base.name);
 					final ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base.");
+					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base. (Must be in safezone)");
 					meta.setLore(lore);
 					baseItem.setItemMeta(meta);
 					inventory.setItem(mediumCount + 28, baseItem);
@@ -591,7 +591,7 @@ public class Base implements Externalizable {
 					final ItemStack baseItem = new ItemStack(Material.GLOWSTONE);
 					meta.setDisplayName(ChatColor.GREEN + base.name);
 					final ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base.");
+					lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Click to teleport to base. (Must be in safezone)");
 					meta.setLore(lore);
 					baseItem.setItemMeta(meta);
 					inventory.setItem(fortCount + 33, baseItem);
