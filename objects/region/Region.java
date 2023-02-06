@@ -24,10 +24,10 @@ public class Region implements Serializable {
 	public Region(final String name, final Location selectionPosition1, final Location selectionPosition2) {
 		this.name = name;
 		this.lowX = (int)Math.min(selectionPosition1.getX(), selectionPosition2.getX());
-		this.lowY = (int)Math.max(selectionPosition1.getX(), selectionPosition2.getX());
-		this.lowZ = (int)Math.min(selectionPosition1.getY(), selectionPosition2.getY());
-		this.highX = (int)Math.max(selectionPosition1.getY(), selectionPosition2.getY());
-		this.highY = (int)Math.min(selectionPosition1.getZ(), selectionPosition2.getZ());
+		this.highX = (int)Math.max(selectionPosition1.getX(), selectionPosition2.getX());
+		this.lowY = (int)Math.min(selectionPosition1.getY(), selectionPosition2.getY());
+		this.highY = (int)Math.max(selectionPosition1.getY(), selectionPosition2.getY());
+		this.lowZ = (int)Math.min(selectionPosition1.getZ(), selectionPosition2.getZ());
 		this.highZ = (int)Math.max(selectionPosition1.getZ(), selectionPosition2.getZ());
 	}
 	
