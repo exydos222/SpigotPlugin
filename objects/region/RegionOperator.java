@@ -36,7 +36,7 @@ public class RegionOperator {
         for (final Region region : Region.regions)
             if (!region.name.startsWith(name))
                 continue;
-            else if (player.getLocation().getX() < region.lowX || player.getLocation().getY() < region.lowY || player.getLocation().getZ() < region.lowZ || player.getLocation().getX() > region.highX || player.getLocation().getY() < region.highY || player.getLocation().getZ() > region.highZ)
+            else if (player.getLocation().getX() < region.lowX || player.getLocation().getY() < region.lowY || player.getLocation().getZ() < region.lowZ || player.getLocation().getX() > region.highX || player.getLocation().getY() > region.highY || player.getLocation().getZ() > region.highZ)
                 continue;
             else
                 return region;
