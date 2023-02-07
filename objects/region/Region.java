@@ -35,7 +35,7 @@ public class Region implements Serializable {
     }
     
     public boolean isInsideRegion(final Player player) {
-        if (player.getLocation().getX() < this.lowX && player.getLocation().getY() < this.lowY && player.getLocation().getZ() < this.lowZ && player.getLocation().getX() > this.highX && player.getLocation().getY() < this.highY && player.getLocation().getZ() > this.highZ)
+        if (player.getLocation().getX() < this.lowX || player.getLocation().getY() < this.lowY || player.getLocation().getZ() < this.lowZ || player.getLocation().getX() > this.highX || player.getLocation().getY() < this.highY || player.getLocation().getZ() > this.highZ)
             return false;
         return true;
     }
@@ -53,46 +53,8 @@ public class Region implements Serializable {
         }
     }
     
-    public double distanceToCenter(final Player player) {
-        return player.getLocation().distance(new Location(player.getWorld(), this.lowX + Math.abs(this.lowX - this.highX) / 2, this.lowY + Math.abs(this.lowY - this.highY) / 2, this.lowZ + Math.abs(this.lowZ - this.highZ) / 2));
-    }
-    
-    public double distanceToCenterInversed(final Player player) {
-        return (Math.abs(this.highX - this.lowX) - Math.abs((this.lowX + Math.abs(this.lowX - this.highX) / 2) - player.getLocation().getX())) + (Math.abs(this.highY - this.lowY) - Math.abs((this.lowY + Math.abs(this.lowY - this.highY) / 2) - player.getLocation().getY())) + (Math.abs(this.highZ - this.lowZ) - Math.abs((this.lowZ + Math.abs(this.lowZ - this.highZ) / 2) - player.getLocation().getZ()));
-    }
-    
-    // TODO
-    
-    public double distanceToCenterScaled(final Player player, final float max) {
-        return player.getLocation().distance(new Location(player.getWorld(), this.lowX + Math.abs(this.lowX - this.highX) / 2, this.lowY + Math.abs(this.lowY - this.highY) / 2, this.lowZ + Math.abs(this.lowZ - this.highZ) / 2));
-    }
-    
-    public double distanceToCenterInversedScaled(final Player player, final float max) {
-        return (Math.abs(this.highX - this.lowX) - Math.abs((this.lowX + Math.abs(this.lowX - this.highX) / 2) - player.getLocation().getX())) + (Math.abs(this.highY - this.lowY) - Math.abs((this.lowY + Math.abs(this.lowY - this.highY) / 2) - player.getLocation().getY())) + (Math.abs(this.highZ - this.lowZ) - Math.abs((this.lowZ + Math.abs(this.lowZ - this.highZ) / 2) - player.getLocation().getZ()));
-    }
-    
-    public static Region isInsideAnyRegion(final Player player) {
-        for (final Region region : regions)
-            if (player.getLocation().getX() < region.lowX && player.getLocation().getY() < region.lowY && player.getLocation().getZ() < region.lowZ && player.getLocation().getX() > region.highX && player.getLocation().getY() < region.highY && player.getLocation().getZ() > region.highZ)
-                continue;
-            else
-                return region;
-        return null;
-    }
-    
-    public static Region isInsideAnyRegionWithANameStartingWith(final Player player, final String name) {
-        for (final Region region : regions)
-            if (!region.name.startsWith(name))
-                continue;
-            else if (player.getLocation().getX() < region.lowX && player.getLocation().getY() < region.lowY && player.getLocation().getZ() < region.lowZ && player.getLocation().getX() > region.highX && player.getLocation().getY() < region.highY && player.getLocation().getZ() > region.highZ)
-                continue;
-            else
-                return region;
-        return null;
-    }
-    
     public static void loadRegions() {
-        for (final File file : new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/BaseData/").listFiles()) {
+        for (final File file : new File(JavaPlugin.getPlugin(Main.class).getDataFolder() + "/RegionData/").listFiles()) {
             Region region = null;
             try {
                 final FileInputStream fileInputStream = new FileInputStream(file);

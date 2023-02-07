@@ -32,6 +32,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import objects.bases.Base;
 import objects.region.Region;
+import objects.region.RegionOperator;
 
 public class Main extends JavaPlugin {
     
@@ -154,18 +155,20 @@ public class Main extends JavaPlugin {
             @Override
             public void run() {
                 for (final Player player : getServer().getOnlinePlayers()) {
-                    final Region inInfectedZone = Region.isInsideAnyRegionWithANameStartingWith(player, "Infected");
+                    final Region inInfectedZone = RegionOperator.isInsideAnyRegionWithANameStartingWith(player, "Infected");
                     final PlayerSaveData data = PlayerSessionData.PlayerData.get(player.getUniqueId()).savedata;
-                    if (inInfectedZone != null && data.inInfectedZone == null)
-                        player.sendMessage("You have entered an infected zone, you will take damage without the proper equipment.");
-                    else if (inInfectedZone == null && data.inInfectedZone != null) {
+                    if (inInfectedZone != null) {
+                        final double infectionStrength = Math.max(0, RegionOperator.distanceToCenterInversedScaled(inInfectedZone, player, 4.5f) - (player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS ? 1 : 0) - (player.getInventory().getLeggings().getType() == Material.GOLDEN_LEGGINGS ? 1 : 0) - (player.getInventory().getChestplate().getType() == Material.GOLDEN_CHESTPLATE ? 1 : 0) - (player.getInventory().getHelmet().getType() == Material.GOLDEN_HELMET ? 1 : 0));
+                        player.setHealth(player.getHealth() - infectionStrength);
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, (int)Math.floor(infectionStrength)));
+                        if (data.inInfectedZone == null)
+                            player.sendMessage("You have entered an infected zone, you will take damage without the proper equipment.");
+                        data.inInfectedZone = inInfectedZone;
+                    } else if (inInfectedZone == null && data.inInfectedZone != null) {
                         player.sendMessage("You have left the infected zone.");
                         player.removePotionEffect(PotionEffectType.CONFUSION);
+                        data.inInfectedZone = inInfectedZone;
                     }
-                    data.inInfectedZone = inInfectedZone;
-                    final double infectionStrength = Math.max(0, inInfectedZone.distanceToCenterInversedScaled(player, 4.5f) - (player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS ? 1 : 0) - (player.getInventory().getLeggings().getType() == Material.GOLDEN_LEGGINGS ? 1 : 0) - (player.getInventory().getChestplate().getType() == Material.GOLDEN_CHESTPLATE ? 1 : 0) - (player.getInventory().getHelmet().getType() == Material.GOLDEN_HELMET ? 1 : 0));
-                    player.setHealth(player.getHealth() - infectionStrength);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, (int)Math.floor(infectionStrength)));
                 }
             }
         }, 20, 20);

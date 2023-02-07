@@ -68,7 +68,7 @@ public class SchematicCommand implements CommandExecutor {
                 return true;
             }
             file.delete();
-            sender.sendMessage("Schematic named has been deleted.");
+            sender.sendMessage("Schematic has been deleted.");
             break;
         case "wand":
             ((Player)sender).getInventory().addItem(new ItemStack(Material.GOLDEN_AXE));

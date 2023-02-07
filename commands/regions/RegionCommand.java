@@ -60,7 +60,10 @@ public class RegionCommand implements CommandExecutor {
                 return true;
             }
             file.delete();
-            sender.sendMessage("Region named has been deleted.");
+            for (final Region region : Region.regions)
+                if (region.name.equals(args[1]))
+                    Region.regions.remove(region);
+            sender.sendMessage("Region has been deleted.");
             break;
         case "wand":
             ((Player)sender).getInventory().addItem(new ItemStack(Material.GOLDEN_AXE));

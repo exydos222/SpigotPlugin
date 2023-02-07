@@ -62,7 +62,7 @@ import enums.bases.BaseRank;
 import enums.bases.BaseType;
 import objects.bases.Base;
 import objects.bases.BaseMember;
-import objects.region.Region;
+import objects.region.RegionOperator;
 
 public class EventListener implements Listener {
     
@@ -612,7 +612,8 @@ public class EventListener implements Listener {
         if (e.getCurrentItem() == null)
             return;
         if (e.getView().getTitle().startsWith("You are in ") && e.getView().getTitle().endsWith(" bases") && (e.getCurrentItem().getType() == Material.SEA_LANTERN || e.getCurrentItem().getType() == Material.JACK_O_LANTERN || e.getCurrentItem().getType() == Material.GLOWSTONE)) {
-            if (Region.isInsideAnyRegionWithANameStartingWith((Player)e.getWhoClicked(), "Safezone") == null) {
+            e.setCancelled(true);
+            if (RegionOperator.isInsideAnyRegionWithANameStartingWith((Player)e.getWhoClicked(), "Safezone") == null) {
                 e.getWhoClicked().sendMessage("You must be in a safezone to teleport to a base.");
                 return;
             }
