@@ -15,12 +15,14 @@ import java.util.UUID;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import main.Main;
+import objects.region.Region;
 
 public class PlayerSaveData implements Externalizable {
 
-    private static final short version = 1;
+    private static final short version = 2;
     
     public ArrayList<UUID> teams = new ArrayList<>();
+    public Region inInfectedZone;
     
     @SuppressWarnings("unchecked")
     @Override
@@ -29,6 +31,10 @@ public class PlayerSaveData implements Externalizable {
         case 1:
             teams = (ArrayList<UUID>)in.readObject();
             break;
+        case 2:
+            teams = (ArrayList<UUID>)in.readObject();
+            inInfectedZone = (Region)in.readObject();
+            break;
         }
     }
     
@@ -36,6 +42,7 @@ public class PlayerSaveData implements Externalizable {
     public void writeExternal(final ObjectOutput out) throws IOException {
         out.writeShort(version);
         out.writeObject(this.teams);
+        out.writeObject(inInfectedZone);
     }
     
     public void saveData(final UUID uuid) {

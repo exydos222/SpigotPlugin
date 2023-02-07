@@ -6,8 +6,11 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -21,6 +24,7 @@ import commands.teams.TeamCommand;
 import data.blocks.MinedBlockData;
 import data.cars.CarData;
 import data.cars.Cars;
+import data.player.PlayerSaveData;
 import data.player.PlayerSessionData;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import net.md_5.bungee.api.ChatColor;
@@ -146,6 +150,25 @@ public class Main extends JavaPlugin {
                 Cars.saveCars();
             }
         }, 6000, 6000);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for (final Player player : getServer().getOnlinePlayers()) {
+                    final Region inInfectedZone = Region.isInsideAnyRegionWithANameStartingWith(player, "Infected");
+                    final PlayerSaveData data = PlayerSessionData.PlayerData.get(player.getUniqueId()).savedata;
+                    if (inInfectedZone != null && data.inInfectedZone == null)
+                        player.sendMessage("You have entered an infected zone, you will take damage without the proper equipment.");
+                    else if (inInfectedZone == null && data.inInfectedZone != null) {
+                        player.sendMessage("You have left the infected zone.");
+                        player.removePotionEffect(PotionEffectType.CONFUSION);
+                    }
+                    data.inInfectedZone = inInfectedZone;
+                    final double infectionStrength = Math.max(0, inInfectedZone.distanceToCenterInversedScaled(player, 4.5f) - (player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS ? 1 : 0) - (player.getInventory().getLeggings().getType() == Material.GOLDEN_LEGGINGS ? 1 : 0) - (player.getInventory().getChestplate().getType() == Material.GOLDEN_CHESTPLATE ? 1 : 0) - (player.getInventory().getHelmet().getType() == Material.GOLDEN_HELMET ? 1 : 0));
+                    player.setHealth(player.getHealth() - infectionStrength);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, (int)Math.floor(infectionStrength)));
+                }
+            }
+        }, 20, 20);
     }
     
     @Override

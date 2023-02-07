@@ -34,7 +34,7 @@ public class RegionCommand implements CommandExecutor {
             }
             final PlayerSessionData data = PlayerSessionData.PlayerData.get(((Player)sender).getUniqueId());
             if (data.selectionPosition1 == null) {
-                sender.sendMessage("You have not set your first position.");
+             sender.sendMessage("You have not set your first position.");
                 return true;
             } else if (data.selectionPosition2 == null) {
                 sender.sendMessage("You have not set your second position.");
@@ -66,7 +66,7 @@ public class RegionCommand implements CommandExecutor {
             ((Player)sender).getInventory().addItem(new ItemStack(Material.GOLDEN_AXE));
             break;
         default:
-            sender.sendMessage("Unknown sub-command, available:\nsave <name>\npaste <name>\ndelete <name>\nwand");
+            sender.sendMessage("Unknown sub-command, available:\ncreate <name>\ndelete <name>\nwand");
         }
         return true;
     }
