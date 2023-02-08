@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
-import data.bases.BaseInvite;
 import objects.bases.Base;
+import objects.bases.BaseInvite;
 
 public class PlayerSessionData {
     
