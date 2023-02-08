@@ -158,18 +158,21 @@ public class Main extends JavaPlugin {
                     final Region inInfectedZone = RegionOperator.isInsideAnyRegionWithANameStartingWith(player, "Infected");
                     final PlayerSaveData data = PlayerSessionData.PlayerData.get(player.getUniqueId()).savedata;
                     if (inInfectedZone != null) {
-                        final double infectionStrength = Math.max(0, RegionOperator.distanceToCenterInversedScaled(inInfectedZone, player, 4.5f) - ((player.getInventory().getBoots() != null && player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS) ? 1 : 0) -
+                        final double infectionStrength = Math.max(0, RegionOperator.distanceToCenterInversedScaled(inInfectedZone, player, 5) - ((player.getInventory().getBoots() != null && player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS) ? 1 : 0) -
                                 ((player.getInventory().getLeggings() != null && player.getInventory().getLeggings().getType() == Material.GOLDEN_LEGGINGS) ? 1 : 0) -
                                 ((player.getInventory().getChestplate() != null && player.getInventory().getChestplate().getType() == Material.GOLDEN_CHESTPLATE) ? 1 : 0) -
                                 ((player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GOLDEN_HELMET) ? 1 : 0));
                         player.setHealth(Math.max(0, player.getHealth() - infectionStrength));
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, (int)Math.floor(infectionStrength)));
+                        if (player.hasPotionEffect(PotionEffectType.SLOW))
+                            player.removePotionEffect(PotionEffectType.SLOW);
+                        if (infectionStrength >= 2)
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, (int)Math.floor(infectionStrength / 2)));
                         if (data.inInfectedZone == null)
                             player.sendMessage("You have entered an infected zone, you will take damage without the proper equipment.");
                         data.inInfectedZone = inInfectedZone;
                     } else if (inInfectedZone == null && data.inInfectedZone != null) {
                         player.sendMessage("You have left the infected zone.");
-                        player.removePotionEffect(PotionEffectType.CONFUSION);
+                        player.removePotionEffect(PotionEffectType.SLOW);
                         data.inInfectedZone = inInfectedZone;
                     }
                 }
