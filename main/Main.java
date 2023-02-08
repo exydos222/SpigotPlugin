@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -96,6 +97,7 @@ public class Main extends JavaPlugin {
             }
         });
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK) {
+            @SuppressWarnings({ "deprecation", "incomplete-switch" })
             @Override
             public void onPacketReceiving(final PacketEvent e) {
                 if (!PlayerSessionData.PlayerData.containsKey(e.getPlayer().getUniqueId()))
@@ -111,27 +113,37 @@ public class Main extends JavaPlugin {
                             }
                     data.oldCarDriver = null;
                     return;
-                } else if (data.carDriver == null || !PlayerSessionData.PlayerData.containsKey(data.carDriver))
+                } else if (data.carDriver != null && PlayerSessionData.PlayerData.containsKey(data.carDriver)) {
+                    ArrayList<UUID> passengers = PlayerSessionData.PlayerData.get(data.carDriver).carPassengers;
+                    if (!passengers.contains(e.getPlayer().getUniqueId()))
                         return;
-                ArrayList<UUID> passengers = PlayerSessionData.PlayerData.get(data.carDriver).carPassengers;
-                if (!passengers.contains(e.getPlayer().getUniqueId()))
-                    return;
-                passengers.remove(e.getPlayer().getUniqueId());
-                final Player driver = Bukkit.getPlayer(data.carDriver);
-                passengers = Cars.CarData.get(driver.getVehicle().getUniqueId()).passengers;
-                if (!passengers.contains(e.getPlayer().getUniqueId()))
-                    return;
-                passengers.remove(e.getPlayer().getUniqueId());
-                e.getPlayer().setInvisible(false);
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (data.carDriver == null)
-                            return;
-                        e.getPlayer().teleport(new Location(driver.getWorld(), driver.getLocation().getX(), driver.getLocation().getY(), driver.getLocation().getZ(), e.getPlayer().getLocation().getYaw(), e.getPlayer().getLocation().getPitch()));
-                        data.carDriver = null;
+                    passengers.remove(e.getPlayer().getUniqueId());
+                    final Player driver = Bukkit.getPlayer(data.carDriver);
+                    passengers = Cars.CarData.get(driver.getVehicle().getUniqueId()).passengers;
+                    if (!passengers.contains(e.getPlayer().getUniqueId()))
+                        return;
+                    passengers.remove(e.getPlayer().getUniqueId());
+                    e.getPlayer().setInvisible(false);
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(Main.class), new Runnable() {
+                        @Override
+                        public void run() {
+                            if (data.carDriver == null)
+                                return;
+                            e.getPlayer().teleport(new Location(driver.getWorld(), driver.getLocation().getX(), driver.getLocation().getY(), driver.getLocation().getZ(), e.getPlayer().getLocation().getYaw(), e.getPlayer().getLocation().getPitch()));
+                            data.carDriver = null;
+                        }
+                    }, 1);
+                } else {
+                    switch (e.getPlayer().getItemInHand().getType()) {
+                    case WOODEN_SWORD:
+                    case STONE_SWORD:
+                    case IRON_SWORD:
+                        for (final Entity entity : e.getPlayer().getNearbyEntities(2, 2, 2))
+                            if (entity instanceof Player && Math.abs(((Player)entity).getLocation().getYaw() - e.getPlayer().getLocation().getYaw()) >= 155)
+                                e.getPlayer().sendMessage("If this were implemented you would be able to backstab them right now!");
+                        break;
                     }
-                }, 1);
+                }
             }
         });
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Server.MOUNT) {
@@ -166,7 +178,7 @@ public class Main extends JavaPlugin {
                         if (player.hasPotionEffect(PotionEffectType.SLOW))
                             player.removePotionEffect(PotionEffectType.SLOW);
                         if (infectionStrength >= 2)
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, (int)Math.floor(infectionStrength / 2)));
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, (int)Math.floor(infectionStrength / 2)));
                         if (data.inInfectedZone == null)
                             player.sendMessage("You have entered an infected zone, you will take damage without the proper equipment.");
                         data.inInfectedZone = inInfectedZone;

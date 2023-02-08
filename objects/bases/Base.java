@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import data.bases.BaseMember;
 import enums.bases.BaseType;
 import main.Main;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;

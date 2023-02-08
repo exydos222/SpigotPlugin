@@ -53,6 +53,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 
+import data.bases.BaseMember;
 import data.blocks.MinedBlockData;
 import data.cars.CarData;
 import data.cars.Cars;
@@ -61,14 +62,13 @@ import data.player.PlayerSessionData;
 import enums.bases.BaseRank;
 import enums.bases.BaseType;
 import objects.bases.Base;
-import objects.bases.BaseMember;
 import objects.region.RegionOperator;
 
 public class EventListener implements Listener {
     
     private static HashSet<Vector> lootedPlacedCars = new HashSet<>();
     
-    public static HashSet<MinedBlockData> minedBlocks = new HashSet<>();
+    protected static HashSet<MinedBlockData> minedBlocks = new HashSet<>();
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(final PlayerJoinEvent e)

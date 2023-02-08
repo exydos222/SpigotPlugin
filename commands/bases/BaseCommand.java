@@ -14,6 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import data.bases.BaseInvite;
+import data.bases.BaseMember;
 import data.player.PlayerSessionData;
 import enums.bases.BaseRank;
 import enums.bases.BaseType;
@@ -22,8 +24,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import objects.bases.Base;
-import objects.bases.BaseInvite;
-import objects.bases.BaseMember;
 
 public class BaseCommand implements CommandExecutor {
 
