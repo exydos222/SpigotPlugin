@@ -14,9 +14,9 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -285,9 +285,31 @@ public class EventListener implements Listener {
         }
     }
     
-    @SuppressWarnings("incomplete-switch")
+    @SuppressWarnings({ "incomplete-switch", "deprecation" })
     @EventHandler
     public void onBlockClick(final PlayerInteractEvent e) {
+        if (e.getClickedBlock() == null)
+            return;
+        e.setCancelled(true);
+        if (e.getPlayer().isOp())
+            e.setCancelled(false);
+        else
+            for (final Base base : Base.bases)
+                if (base.owner == null)
+                    continue;
+                else if (base.isInUnclaimedBaseRegion(e.getClickedBlock().getLocation())) {
+                    if (base.owner.equals(e.getPlayer().getUniqueId())) {
+                        e.setCancelled(false);
+                        break;
+                    } else
+                        for (final BaseMember member : base.members)
+                            if (member.uuid.equals(e.getPlayer().getUniqueId())) {
+                                e.setCancelled(false);
+                                break;
+                            }
+                    e.getPlayer().sendMessage("You cannot interact with bases you are not a member of.");
+                    break;
+                }
         if (e.getHand() != EquipmentSlot.HAND)
             return;
         switch (e.getAction()) {
@@ -305,11 +327,13 @@ public class EventListener implements Listener {
                 e.setCancelled(true);
             } else if (e.getItem() != null && e.getItem().getType() == Material.NETHER_BRICK) {
                 final Entity car = e.getClickedBlock().getWorld().spawnEntity(new Location(e.getClickedBlock().getWorld(), e.getClickedBlock().getX(), e.getClickedBlock().getY() + 1, e.getClickedBlock().getZ(), e.getPlayer().getLocation().getYaw(), 0), EntityType.BOAT);
-                final LivingEntity model = (LivingEntity)e.getClickedBlock().getWorld().spawnEntity(new Location(e.getClickedBlock().getWorld(), e.getClickedBlock().getX(), e.getClickedBlock().getY() + 2, e.getClickedBlock().getZ(), e.getPlayer().getLocation().getYaw(), 0), EntityType.ARMOR_STAND);
+                final ArmorStand model = (ArmorStand)e.getClickedBlock().getWorld().spawnEntity(new Location(e.getClickedBlock().getWorld(), e.getClickedBlock().getX(), e.getClickedBlock().getY() + 2, e.getClickedBlock().getZ(), e.getPlayer().getLocation().getYaw(), 0), EntityType.ARMOR_STAND);
+                model.setItemInHand(new ItemStack(Material.WHITE_TULIP));
                 model.setInvulnerable(true);
                 model.setGravity(false);
                 model.setInvisible(true);
                 Cars.CarData.put(car.getUniqueId(), new CarData(model.getUniqueId()));
+                e.getPlayer().getInventory().remove(Material.NETHER_BRICK);
                 e.setCancelled(true);
             } else if (e.getItem() != null && e.getItem().getType() == Material.IRON_SWORD) {
                 switch (e.getClickedBlock().getType()) {
@@ -317,6 +341,7 @@ public class EventListener implements Listener {
                 case POLISHED_GRANITE_SLAB:
                 case POLISHED_GRANITE_STAIRS:
                 case ANVIL:
+                case NETHERITE_BLOCK:
                 case WARPED_TRAPDOOR:
                 case GRAY_CARPET:
                 case BROWN_CARPET:
@@ -332,13 +357,9 @@ public class EventListener implements Listener {
                     for (int x = minX; x < maxX; x++)
                         for (int y = minY; y < maxY; y++)
                             for (int z = minZ; z < maxZ; z++)
-                                if (e.getPlayer().getWorld().getBlockAt(x, y, z).getType() == Material.ANVIL) {
+                                if (e.getPlayer().getWorld().getBlockAt(x, y, z).getType() == Material.NETHERITE_BLOCK) {
                                     e.setCancelled(true);
                                     final Vector vector = new Vector(x, y, z);
-                                    if (lootedPlacedCars.contains(vector)) {
-                                        e.getPlayer().sendMessage("This car has already been looted.");
-                                        return;
-                                    }
                                     lootedPlacedCars.add(vector);
                                     e.getPlayer().sendMessage("Breaking into car...");
                                     e.getPlayer().setCooldown(Material.IRON_SWORD, 60);
@@ -346,6 +367,10 @@ public class EventListener implements Listener {
                                     Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Main.class), new Runnable() {
                                         @Override
                                         public void run() {
+                                            if (lootedPlacedCars.contains(vector)) {
+                                                e.getPlayer().sendMessage("This car has already been looted.");
+                                                return;
+                                            }
                                             final ItemStack metal = new ItemStack(Material.ORANGE_DYE);
                                             metal.setAmount((int)Math.round(Math.random() * 2) + 4);
                                             if (e.getPlayer().getInventory().firstEmpty() == -1)
@@ -385,6 +410,8 @@ public class EventListener implements Listener {
     @SuppressWarnings("incomplete-switch")
     @EventHandler
     public void onBlockPlace(final BlockPlaceEvent e) {
+        if (!e.getPlayer().isOp())
+            e.setCancelled(true);
         switch (e.getBlock().getBlockData().getMaterial()) {
         case SEA_LANTERN:
         {
@@ -418,7 +445,10 @@ public class EventListener implements Listener {
         case GLOWSTONE:
             if (e.getPlayer().isOp()) {
                 final Base base = Base.getBaseFromLocation(e.getBlock().getLocation());
-                e.getPlayer().sendMessage("You have admin-removed the base named \'" + base.name + "\', owned by player " + Bukkit.getOfflinePlayer(base.owner).getName() + '.');
+                if (base.owner != null)
+                    e.getPlayer().sendMessage("You have admin-removed the base named \'" + base.name + "\', owned by player " + Bukkit.getOfflinePlayer(base.owner).getName() + '.');
+                else
+                    e.getPlayer().sendMessage("You have admin-removed an unclaimed base.");
                 base.removeBaseAndHologram();
             } else
                 e.getPlayer().sendMessage("You must be OP to admin-remove a player's base.");

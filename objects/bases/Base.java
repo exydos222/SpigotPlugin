@@ -30,6 +30,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import enums.bases.BaseType;
 import main.Main;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.line.ClickableHologramLine;
+import me.filoghost.holographicdisplays.api.hologram.line.HologramLineClickEvent;
+import me.filoghost.holographicdisplays.api.hologram.line.HologramLineClickListener;
 import objects.schematic.Schematic;
 import objects.schematic.SchematicOperator;
 
@@ -893,6 +896,24 @@ public class Base implements Externalizable {
             this.hologram.getLines().appendItem(new ItemStack(Material.RED_DYE));
             this.hologram.getLines().appendText(ChatColor.GREEN + "" + this.wood + " Wood");
         }
+        final Base base = this;
+        for (byte i = 0; i < this.hologram.getLines().size(); i++)
+            ((ClickableHologramLine)this.hologram.getLines().get(i)).setClickListener(new HologramLineClickListener() {
+                @Override
+                public void onClick(final HologramLineClickEvent e)
+                {
+                    for (final BaseMember member : base.members)
+                        if (member.uuid.equals(e.getPlayer().getUniqueId())) {
+                            e.getPlayer().openInventory(base.createInventory());
+                            return;
+                        }
+                    if (base.owner != null && base.owner.equals(e.getPlayer().getUniqueId())) {
+                        e.getPlayer().openInventory(base.createInventory());
+                        return;
+                    }
+                    e.getPlayer().sendMessage("You are not a member of this base");
+                }
+            });
     }
     
     public void addBaseAndHologram() {
