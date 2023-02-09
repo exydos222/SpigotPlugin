@@ -911,7 +911,7 @@ public class Base implements Externalizable {
                         e.getPlayer().openInventory(base.createInventory());
                         return;
                     }
-                    e.getPlayer().sendMessage("You are not a member of this base");
+                    e.getPlayer().sendMessage("You are not a member of this base.");
                 }
             });
     }
