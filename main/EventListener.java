@@ -29,6 +29,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -198,6 +199,13 @@ public class EventListener implements Listener {
                 Bukkit.getPlayer(passenger).teleport(new Location(e.getVehicle().getWorld(), e.getVehicle().getLocation().getX(), e.getVehicle().getLocation().getY() + 1, e.getVehicle().getLocation().getZ(), e.getVehicle().getLocation().getYaw(), 0));
             Bukkit.getEntity(carData.model).remove();
         }
+    }
+    
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void onInteractAtEntity(final PlayerInteractAtEntityEvent e) {
+        if (e.getRightClicked().getType() == EntityType.ARMOR_STAND && ((ArmorStand)e.getRightClicked()).getItemInHand().getType() == Material.WHITE_TULIP)
+            e.setCancelled(true);
     }
     
     @SuppressWarnings("deprecation")
@@ -474,10 +482,13 @@ public class EventListener implements Listener {
         }
     }
     
+    @SuppressWarnings("deprecation")
     @EventHandler
-    public void onPlayerAttack(final EntityDamageByEntityEvent e)
+    public void onEntityAttack(final EntityDamageByEntityEvent e)
     {
-        if (e.getEntity() instanceof Player)
+        if (e.getEntity().getType() == EntityType.ARMOR_STAND && ((ArmorStand)e.getEntity()).getItemInHand().getType() == Material.WHITE_TULIP)
+            e.setCancelled(true);
+        else if (e.getEntity() instanceof Player)
             if (e.getDamager() instanceof Player && PlayerSessionData.PlayerData.get(((Player)e.getDamager()).getUniqueId()).savedata.teams.contains(((Player)e.getEntity()).getUniqueId()))
                 e.setCancelled(true);
             else {
