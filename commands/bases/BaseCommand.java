@@ -124,6 +124,10 @@ public class BaseCommand implements CommandExecutor {
         case "invite":
         case "invite-player":
         case "invite_player":
+        case "addmember":
+        case "addplayer":
+        case "inviteplayer":
+        case "invitemember":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a base.");
@@ -257,6 +261,8 @@ public class BaseCommand implements CommandExecutor {
         case "remove":
         case "remove-player":
         case "remove_player":
+        case "removeplayer":
+        case "removemember":
         {
             switch (args.length) {
             case 1:

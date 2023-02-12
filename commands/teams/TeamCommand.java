@@ -50,6 +50,10 @@ public class TeamCommand implements CommandExecutor {
         case "invite":
         case "invite-player":
         case "invite_player":
+        case "addmember":
+        case "addplayer":
+        case "invitemember":
+        case "inviteplayer":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a player.");
@@ -95,7 +99,12 @@ public class TeamCommand implements CommandExecutor {
             break;
         }
         case "remove":
+        case "remove_player":
+        case "remove_member":
+        case "removeplayer":
+        case "removemember":
         case "delete":
+        case "disband":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a player.");
