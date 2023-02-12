@@ -18,11 +18,11 @@ commands:
    schematicdata:
       description: Create schematics compatible with this plugin
       usage: /schematic <sub-command(s)>
-      aliases: [sd, schemdata, schemdatas, schematicdatas]
+      aliases: [sd, schemdata, schemdatas, schematicdatas, schematicsdatas, schematicsdata]
    regiondata:
       description: Create regions compatible with this plugin
       usage: /regiondata <sub-command(s)>
-      aliases: [rd, regiondatas]
+      aliases: [rd, regiondatas, regionsdatas, regiondata]
    pm:
       description: Privately message players
       usage: /pm <sub-command(s)>
