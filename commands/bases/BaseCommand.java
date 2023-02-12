@@ -115,6 +115,15 @@ public class BaseCommand implements CommandExecutor {
             break;
         }
         case "add-member":
+        case "add_member":
+        case "add":
+        case "add-player":
+        case "add_player":
+        case "invite-member":
+        case "invite_member":
+        case "invite":
+        case "invite-player":
+        case "invite_player":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a base.");
@@ -244,104 +253,115 @@ public class BaseCommand implements CommandExecutor {
             break;
         }
         case "remove-member":
+        case "remove_member":
+        case "remove":
+        case "remove-player":
+        case "remove_player":
         {
-            if (args.length == 1) {
+            switch (args.length) {
+            case 1:
                 sender.sendMessage("You did not specify a base.");
-                return true;
-            } else if (args.length == 2) {
+                break;
+            case 2:
                 sender.sendMessage("You did not specify a player.");
-                return true;
-            }
-            final Base base = Base.getBaseFromName(args[1]);
-            if (base == null) {
-                sender.sendMessage("You do not have the correct base permissions to perform this action.");
-                return true;
-            }
-            @SuppressWarnings("deprecation") final OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
-            if (player.getUniqueId().equals(((Player)sender).getUniqueId())) {
-                sender.sendMessage("Why would you even try to kick yourself...");
-                return true;
-            } else if (base.owner.equals(player.getUniqueId())) {
-                sender.sendMessage("You cannot kick the owner.");
-                return true;
-            }
-            for (final BaseMember member : base.members)
-                if (member.uuid.equals(player.getUniqueId())) {
-                    boolean hasPermissions = false;
-                    if (base.owner.equals(((Player)sender).getUniqueId()))
-                        hasPermissions = true;
-                    else
-                        for (final BaseMember subMember : base.members)
-                            if (subMember.uuid.equals(((Player)sender).getUniqueId()) && subMember.rank == BaseRank.ADMIN)
-                                hasPermissions = true;
-                    if (hasPermissions) {
-                        base.members.remove(member);
-                        if (player.isOnline())
-                            ((Player)player).sendMessage("You have been kicked from the base named \'" + args[1] + "\'.");
-                        sender.sendMessage("You have kicked " + player.getName() + " from the base \'" + base.name + "\'.");
-                        base.updateHologram();
-                    } else
-                        sender.sendMessage("You do not have the correct base permissions to perform this action.");
+                break;
+            default:
+                final Base base = Base.getBaseFromName(args[1]);
+                if (base == null) {
+                    sender.sendMessage("You do not have the correct base permissions to perform this action.");
                     return true;
                 }
-            sender.sendMessage("That player is not in the base \'" + args[1] + "\'.");
-            break;
-        }
-        case "set-rank":
-        {
-            if (args.length == 1) {
-                sender.sendMessage("You did not specify a base.");
-                return true;
-            } else if (args.length == 2) {
-                sender.sendMessage("You did not specify a player.");
-                return true;
-            } else if (args.length == 3) {
-                sender.sendMessage("You did not specify a rank.");
-                return true;
-            }
-            final Base base = Base.getBaseFromName(args[1]);
-            if (base == null) {
-                sender.sendMessage("You do not have the correct base permissions to perform this action.");
-                return true;
-            }
-            @SuppressWarnings("deprecation") final OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
-            if (player.getUniqueId().equals(((Player)sender).getUniqueId())) {
-                sender.sendMessage("You can't modify your own rank.");
-                return true;
-            } else if (base.owner.equals(player.getUniqueId())) {
-                sender.sendMessage("You cannot modify the rank of the owner.");
-                return true;
-            }
-            boolean hasPermissions = false;
-            if (base.owner.equals(((Player)sender).getUniqueId()))
-                hasPermissions = true;
-            for (final BaseMember member : base.members)
-                if ((member.uuid.equals(((Player)sender).getUniqueId()) && member.rank == BaseRank.ADMIN) || hasPermissions) {
-                    BaseRank newRank;
-                    switch (args[3].toUpperCase()) {
-                    case "MEMBER":
-                        newRank = BaseRank.MEMBER;
-                        break;
-                    case "MODERATOR":
-                        newRank = BaseRank.MODERATOR;
-                        break;
-                    case "ADMIN":
-                        newRank = BaseRank.ADMIN;
-                        break;
-                    default:
-                        sender.sendMessage("Unknown rank, available: member, moderator, admin");
+                @SuppressWarnings("deprecation") final OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
+                if (player.getUniqueId().equals(((Player)sender).getUniqueId())) {
+                    sender.sendMessage("Why would you even try to kick yourself...");
+                    return true;
+                } else if (base.owner.equals(player.getUniqueId())) {
+                    sender.sendMessage("You cannot kick the owner.");
+                    return true;
+                }
+                for (final BaseMember member : base.members)
+                    if (member.uuid.equals(player.getUniqueId())) {
+                        boolean hasPermissions = false;
+                        if (base.owner.equals(((Player)sender).getUniqueId()))
+                            hasPermissions = true;
+                        else
+                            for (final BaseMember subMember : base.members)
+                                if (subMember.uuid.equals(((Player)sender).getUniqueId()) && subMember.rank == BaseRank.ADMIN)
+                                    hasPermissions = true;
+                        if (hasPermissions) {
+                            base.members.remove(member);
+                            if (player.isOnline())
+                                ((Player)player).sendMessage("You have been kicked from the base named \'" + args[1] + "\'.");
+                            sender.sendMessage("You have kicked " + player.getName() + " from the base \'" + base.name + "\'.");
+                            base.updateHologram();
+                        } else
+                            sender.sendMessage("You do not have the correct base permissions to perform this action.");
                         return true;
                     }
-                    member.rank = newRank;
-                    sender.sendMessage("You have set " + (player.getName().charAt(player.getName().length() - 1) == 's' ? (player.getName() + '\'') : (player.getName() + "\'s")) + " rank to " + newRank.name() + " in the base named \'" + base.name + "\'.");
-                    if (player.isOnline())
-                        ((Player)player).sendMessage("Your rank in the base named \'" + base.name + "\' has been set to " + newRank.name() + '.');
+                sender.sendMessage("That player is not in the base \'" + args[1] + "\'.");   
+            }
+        }
+        case "set-rank":
+        case "set":
+        case "set_rank":
+        {
+            switch (args.length) {
+            case 1:
+                sender.sendMessage("You did not specify a base.");
+                break;
+            case 2:
+                sender.sendMessage("You did not specify a player.");
+                break;
+            case 3:
+                sender.sendMessage("You did not specify a rank.");
+                break;
+            default:
+                final Base base = Base.getBaseFromName(args[1]);
+                if (base == null) {
+                    sender.sendMessage("You do not have the correct base permissions to perform this action.");
                     return true;
                 }
-            sender.sendMessage("You do not have the correct base permissions to perform this action.");
+                @SuppressWarnings("deprecation") final OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
+                if (player.getUniqueId().equals(((Player)sender).getUniqueId())) {
+                    sender.sendMessage("You can't modify your own rank.");
+                    return true;
+                } else if (base.owner.equals(player.getUniqueId())) {
+                    sender.sendMessage("You cannot modify the rank of the owner.");
+                    return true;
+                }
+                boolean hasPermissions = false;
+                if (base.owner.equals(((Player)sender).getUniqueId()))
+                    hasPermissions = true;
+                for (final BaseMember member : base.members)
+                    if ((member.uuid.equals(((Player)sender).getUniqueId()) && member.rank == BaseRank.ADMIN) || hasPermissions) {
+                        BaseRank newRank;
+                        switch (args[3].toUpperCase()) {
+                        case "MEMBER":
+                            newRank = BaseRank.MEMBER;
+                            break;
+                        case "MODERATOR":
+                            newRank = BaseRank.MODERATOR;
+                            break;
+                        case "ADMIN":
+                            newRank = BaseRank.ADMIN;
+                            break;
+                        default:
+                            sender.sendMessage("Unknown rank, available: member, moderator, admin");
+                            return true;
+                        }
+                        member.rank = newRank;
+                        sender.sendMessage("You have set " + (player.getName().charAt(player.getName().length() - 1) == 's' ? (player.getName() + '\'') : (player.getName() + "\'s")) + " rank to " + newRank.name() + " in the base named \'" + base.name + "\'.");
+                        if (player.isOnline())
+                            ((Player)player).sendMessage("Your rank in the base named \'" + base.name + "\' has been set to " + newRank.name() + '.');
+                        return true;
+                    }
+                sender.sendMessage("You do not have the correct base permissions to perform this action.");
+            }
             break;
         }
         case "disband":
+        case "unclaim":
+        case "delete":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a base.");
@@ -410,60 +430,64 @@ public class BaseCommand implements CommandExecutor {
         }
         case "accept":
         {
-            if (args.length == 1) {
+            switch (args.length) {
+            case 1:
                 sender.sendMessage("You did not specify a base.");
-                return true;
-            } else if (args.length == 2) {
+                break;
+            case 2:
                 sender.sendMessage("You did not specify a player.");
-                return true;
-            }
-            final Player player = Bukkit.getPlayer(args[2]);
-            if (player == null) {
-                sender.sendMessage("That player is not online.");
-                return true;
-            }
-            final PlayerSessionData data = PlayerSessionData.PlayerData.get(player.getUniqueId());
-            final Base base = Base.getBaseFromName(args[1]);
-            for (final BaseInvite invite : data.activeBaseInvites)
-                if (invite.base == base && invite.player.equals(((Player)sender).getUniqueId())) {
-                    data.activeBaseInvites.remove(invite);
-                    base.members.add(new BaseMember(BaseRank.MEMBER, ((Player)sender).getUniqueId()));
-                    base.updateHologram();
-                    sender.sendMessage("You accepted " + (player.getDisplayName().charAt(player.getDisplayName().length() - 1) == 's' ? (player.getDisplayName() + '\'') : (player.getDisplayName() + "\'s")) + " invite to the base named \'" + args[1] + "\'.");
-                    player.sendMessage(((Player)sender).getDisplayName() + " has accepted your invite to the base named \'" + args[1] + "\'.");
-                    ((Player)sender).playNote(((Player)sender).getLocation(), Instrument.CHIME, Note.flat(1, Tone.F));
-                    player.playNote(player.getLocation(), Instrument.CHIME, Note.flat(1, Tone.F));
+                break;
+            default:
+                final Player player = Bukkit.getPlayer(args[2]);
+                if (player == null) {
+                    sender.sendMessage("That player is not online.");
                     return true;
                 }
-            sender.sendMessage("You do not have an invite from a base named \'" + args[1] + "\'.");
+                final PlayerSessionData data = PlayerSessionData.PlayerData.get(player.getUniqueId());
+                final Base base = Base.getBaseFromName(args[1]);
+                for (final BaseInvite invite : data.activeBaseInvites)
+                    if (invite.base == base && invite.player.equals(((Player)sender).getUniqueId())) {
+                        data.activeBaseInvites.remove(invite);
+                        base.members.add(new BaseMember(BaseRank.MEMBER, ((Player)sender).getUniqueId()));
+                        base.updateHologram();
+                        sender.sendMessage("You accepted " + (player.getDisplayName().charAt(player.getDisplayName().length() - 1) == 's' ? (player.getDisplayName() + '\'') : (player.getDisplayName() + "\'s")) + " invite to the base named \'" + args[1] + "\'.");
+                        player.sendMessage(((Player)sender).getDisplayName() + " has accepted your invite to the base named \'" + args[1] + "\'.");
+                        ((Player)sender).playNote(((Player)sender).getLocation(), Instrument.CHIME, Note.flat(1, Tone.F));
+                        player.playNote(player.getLocation(), Instrument.CHIME, Note.flat(1, Tone.F));
+                        return true;
+                    }
+                sender.sendMessage("You do not have an invite from a base named \'" + args[1] + "\'.");
+            }
             break;
         }
         case "decline":
         {
-            if (args.length == 1) {
+            switch (args.length) {
+            case 1:
                 sender.sendMessage("You did not specify a base.");
-                return true;
-            } else if (args.length == 2) {
+                break;
+            case 2:
                 sender.sendMessage("You did not specify a player.");
-                return true;
-            }
-            final Player player = Bukkit.getPlayer(args[2]);
-            if (player == null) {
-                sender.sendMessage("That player is not online.");
-                return true;
-            }
-            final PlayerSessionData data = PlayerSessionData.PlayerData.get(player.getUniqueId());
-            final Base base = Base.getBaseFromName(args[1]);
-            for (final BaseInvite invite : data.activeBaseInvites)
-                if (invite.base == base && invite.player.equals(((Player)sender).getUniqueId())) {
-                    data.activeBaseInvites.remove(invite);
-                    sender.sendMessage("You declined " + (player.getDisplayName().charAt(player.getDisplayName().length() - 1) == 's' ? (player.getDisplayName() + '\'') : (player.getDisplayName() + "\'s")) + " invite to the base named \'" + args[1] + "\'.");
-                    player.sendMessage(((Player)sender).getDisplayName() + " has declined your invite to the base named \'" + args[1] + "\'.");
-                    ((Player)sender).playNote(((Player)sender).getLocation(), Instrument.BASS_GUITAR, Note.sharp(0, Tone.B));
-                    player.playNote(player.getLocation(), Instrument.BASS_GUITAR, Note.sharp(0, Tone.B));
+                break;
+            default:
+                final Player player = Bukkit.getPlayer(args[2]);
+                if (player == null) {
+                    sender.sendMessage("That player is not online.");
                     return true;
                 }
-            sender.sendMessage("You do not have an invite from " + player.getDisplayName() + " for a base named \'" + args[1] + "\'.");
+                final PlayerSessionData data = PlayerSessionData.PlayerData.get(player.getUniqueId());
+                final Base base = Base.getBaseFromName(args[1]);
+                for (final BaseInvite invite : data.activeBaseInvites)
+                    if (invite.base == base && invite.player.equals(((Player)sender).getUniqueId())) {
+                        data.activeBaseInvites.remove(invite);
+                        sender.sendMessage("You declined " + (player.getDisplayName().charAt(player.getDisplayName().length() - 1) == 's' ? (player.getDisplayName() + '\'') : (player.getDisplayName() + "\'s")) + " invite to the base named \'" + args[1] + "\'.");
+                        player.sendMessage(((Player)sender).getDisplayName() + " has declined your invite to the base named \'" + args[1] + "\'.");
+                        ((Player)sender).playNote(((Player)sender).getLocation(), Instrument.BASS_GUITAR, Note.sharp(0, Tone.B));
+                        player.playNote(player.getLocation(), Instrument.BASS_GUITAR, Note.sharp(0, Tone.B));
+                        return true;
+                    }
+                sender.sendMessage("You do not have an invite from " + player.getDisplayName() + " for a base named \'" + args[1] + "\'.");
+            }
             break;
         }
         case "list":
@@ -514,32 +538,35 @@ public class BaseCommand implements CommandExecutor {
             break;
         }
         case "chat":
+        case "c":
         {
-            if (args.length == 1) {
+            switch (args.length) {
+            case 1:
                 sender.sendMessage("You did not specify a base.");
-                return true;
-            } else if (args.length == 2) {
+                break;
+            case 2:
                 sender.sendMessage("You did not specify a message.");
-                return true;
-            }
-            final Base base = Base.getBaseFromName(args[1]);
-            if (base == null) {
-                sender.sendMessage("There is not a base named \'" + args[1] + "\'.");
-                return true;
-            }
-            if (!base.owner.equals(((Player)sender).getUniqueId())) {
-                for (final BaseMember member : base.members)
-                    if (member.uuid.equals(((Player)sender).getUniqueId()))
-                        break;
-                return true;
-            }
-            Player player = Bukkit.getPlayer(base.owner);
-            if (player != null)
-                player.sendMessage(ChatColor.AQUA + "<" + base.name + "> " + ChatColor.WHITE + ((Player)sender).getDisplayName() + ChatColor.GRAY + ": " + ChatColor.WHITE + args[2]);
-            for (final BaseMember member : base.members) {
-                player = Bukkit.getPlayer(member.uuid);
+                break;
+            default:
+                final Base base = Base.getBaseFromName(args[1]);
+                if (base == null) {
+                    sender.sendMessage("There is not a base named \'" + args[1] + "\'.");
+                    return true;
+                }
+                if (!base.owner.equals(((Player)sender).getUniqueId())) {
+                    for (final BaseMember member : base.members)
+                        if (member.uuid.equals(((Player)sender).getUniqueId()))
+                            break;
+                    return true;
+                }
+                Player player = Bukkit.getPlayer(base.owner);
                 if (player != null)
                     player.sendMessage(ChatColor.AQUA + "<" + base.name + "> " + ChatColor.WHITE + ((Player)sender).getDisplayName() + ChatColor.GRAY + ": " + ChatColor.WHITE + args[2]);
+                for (final BaseMember member : base.members) {
+                    player = Bukkit.getPlayer(member.uuid);
+                    if (player != null)
+                        player.sendMessage(ChatColor.AQUA + "<" + base.name + "> " + ChatColor.WHITE + ((Player)sender).getDisplayName() + ChatColor.GRAY + ": " + ChatColor.WHITE + args[2]);
+                }   
             }
             break;
         }

@@ -29,6 +29,8 @@ public class SchematicCommand implements CommandExecutor {
         }
         switch (args[0].toLowerCase()) {
         case "save":
+        case "create":
+        case "add":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a name.");
@@ -58,6 +60,7 @@ public class SchematicCommand implements CommandExecutor {
             sender.sendMessage("Pasted schematic.");
             break;
         case "delete":
+        case "remove":
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a name.");
                 return true;

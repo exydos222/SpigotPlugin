@@ -26,7 +26,9 @@ public class RegionCommand implements CommandExecutor {
             return true;
         }
         switch (args[0].toLowerCase()) {
+        case "save":
         case "create":
+        case "add":
         {
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a name.");
@@ -50,6 +52,7 @@ public class RegionCommand implements CommandExecutor {
             break;
         }
         case "delete":
+        case "remove":
             if (args.length == 1) {
                 sender.sendMessage("You did not specify a name.");
                 return true;

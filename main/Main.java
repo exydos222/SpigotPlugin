@@ -18,7 +18,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
+import commands.bases.BaseChatShortenedCommand;
 import commands.bases.BaseCommand;
+import commands.player.PMCommand;
 import commands.regions.RegionCommand;
 import commands.schematics.SchematicCommand;
 import commands.teams.TeamCommand;
@@ -36,6 +38,8 @@ import objects.region.Region;
 import objects.region.RegionOperator;
 
 public class Main extends JavaPlugin {
+    
+    // TODO : Fix car passenger system.
     
     public static HolographicDisplaysAPI holoapi;
     
@@ -62,8 +66,10 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EventListener(), this);
         this.getCommand("team").setExecutor(new TeamCommand());
         this.getCommand("base").setExecutor(new BaseCommand());
-        this.getCommand("schemdata").setExecutor(new SchematicCommand());
+        this.getCommand("schematicdata").setExecutor(new SchematicCommand());
         this.getCommand("regiondata").setExecutor(new RegionCommand());
+        this.getCommand("pm").setExecutor(new PMCommand());
+        this.getCommand("bc").setExecutor(new BaseChatShortenedCommand());
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Client.STEER_VEHICLE) {
             @Override
             public void onPacketReceiving(final PacketEvent e) {
