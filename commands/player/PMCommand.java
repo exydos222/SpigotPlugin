@@ -20,13 +20,17 @@ public class PMCommand implements CommandExecutor {
             sender.sendMessage("You did not specify a message.");
             break;
         default:
-            final Player ply = Bukkit.getPlayer(args[0]);
-            if (ply==null) {
+            if (args[0].equals(sender.getName())) {
+                sender.sendMessage("You cannot message yourself.");
+                return true;
+            }
+            final Player player = Bukkit.getPlayer(args[0]);
+            if (player == null) {
                 sender.sendMessage("No player by that name was found.");
                 return true;
             }
-            sender.sendMessage(ChatColor.of("#0E7C61")+"You " + ChatColor.WHITE + "to " + ply.getDisplayName() + ChatColor.WHITE + ": " + args[1]);
-            ply.sendMessage(((Player)sender).getDisplayName() + " §fto "+ChatColor.of("#0E7C61")+"You§f: " + args[1]);       
+            sender.sendMessage(ChatColor.of("#0E7C61") + "You " + ChatColor.WHITE + "to " + player.getDisplayName() + ChatColor.WHITE + ": " + args[1]);
+            player.sendMessage(((Player)sender).getDisplayName() + " §fto "+ChatColor.of("#0E7C61") + "You§f: " + args[1]);       
 		}
 		return true;
 	}
