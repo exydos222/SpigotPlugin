@@ -1,0 +1,32 @@
+name: eXydos
+version: 1.0
+main: main.Main
+author: e6b
+api-version: 1.13
+description: Made by eXydos#4324
+depend: [BungeeChatAPI, ProtocolLib]
+softdepend: [HolographicDisplays]
+commands:
+   team:
+      description: Manage your team(s)
+      usage: /team <sub-command(s)>
+      aliases: [t, teams]
+   base:
+      description: Manage your base(s)
+      usage: /base <sub-command(s)>
+      aliases: [b, bases]
+   schematicdata:
+      description: Create schematics compatible with this plugin
+      usage: /schematic <sub-command(s)>
+      aliases: [sd, schemdata, schemdatas, schematicdatas]
+   regiondata:
+      description: Create regions compatible with this plugin
+      usage: /regiondata <sub-command(s)>
+      aliases: [rd, regiondatas]
+   pm:
+      description: Privately message players
+      usage: /pm <sub-command(s)>
+      aliases: [pms, msg, msg, message, messages]
+   bc:
+      description: Shortened version of /base chat
+      usage: /bc <sub-command(s)>
