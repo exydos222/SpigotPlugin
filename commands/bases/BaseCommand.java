@@ -414,7 +414,6 @@ public class BaseCommand implements CommandExecutor {
             }
             data.activeBaseDisollutionRequests.remove(base);
             base.disband();
-            ((Player)sender).playSound(((Player)sender).getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 1.f, 1.f);
             sender.sendMessage("You have disbanded your base named \'" + args[1] + "\'.");
             break;
         }

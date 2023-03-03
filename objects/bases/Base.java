@@ -18,6 +18,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
@@ -58,6 +59,7 @@ public class Base implements Externalizable {
     public int rags, metal, wood;
     public Schematic oldBlocks;
     public boolean pasteInProgress;
+    public short health = 1000, secondsWithoutRaid = Short.MAX_VALUE;
     
     public Base(final Location location, final BaseType type) {
         this.x = Math.round(location.getX());
@@ -835,6 +837,8 @@ public class Base implements Externalizable {
             lore.add(ChatColor.RESET + "" + (this.wood >= woodRequirement ? ChatColor.GREEN : ChatColor.RED) + woodRequirement + " Wood");
             lore.add(ChatColor.RESET + "" + ChatColor.WHITE + "Benefits: ");
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "Max members increases to " + (this.type == BaseType.SMALL ? (this.level + 1) : (this.type == BaseType.MEDIUM ? (this.level + 1) * 2 : (this.level + 1) * 3)));
+            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "Base\'s max HP increases to " + (this.level + 1) * 1000);
+            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "Base\'s HP regeneration speed increases to " + Math.pow(this.level + 1, 2) + "HP/s");
             meta.setLore(lore);
             upgrade.setItemMeta(meta);
             inventory.setItem(13, upgrade);
@@ -861,14 +865,40 @@ public class Base implements Externalizable {
     }
     
     public void disband() {
-        this.owner = null;
-        this.name = null;
+        final World world = Bukkit.getWorld(this.world);
+        world.playSound(new Location(world, this.x, this.y, this.z), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 1.f, 1.f);
         this.level = 1;
+        this.health = 1000;
+        this.secondsWithoutRaid = Short.MAX_VALUE;
         for (final BaseMember member : this.members) {
             final Player player = Bukkit.getPlayer(member.uuid);
             if (player != null)
                 player.sendMessage("The base you were a member of named \'" + this.name + "\' has been disbanded by the owner.");
         }
+        this.name = null;
+        this.attemptToRevertSchematic();
+        SchematicOperator.pasteSchematic(Base.unclaimedSchematic, new Location(Bukkit.getWorld(this.world), this.x - 5, this.y + 4, this.z + 3));
+        this.members.clear();
+        this.updateHologram();
+    }
+    
+    public void disbandDueToRaid() {
+        final World world = Bukkit.getWorld(this.world);
+        world.playSound(new Location(world, this.x, this.y, this.z), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 1.f, 1.f);
+        this.level = 1;
+        this.health = 1000;
+        this.secondsWithoutRaid = Short.MAX_VALUE;
+        for (final BaseMember member : this.members) {
+            final Player player = Bukkit.getPlayer(member.uuid);
+            if (player != null)
+                player.sendMessage("The base you were a member of named \'" + this.name + "\' has been disbanded by raiders.");
+        }
+        final Player owner = Bukkit.getPlayer(this.owner);
+        if (owner != null)
+            owner.sendMessage("The base you owned with the name \'" + this.name + "\' has been disbanded by raiders.");
+        this.owner = null;
+        this.name = null;
+        this.owner = null;
         this.attemptToRevertSchematic();
         SchematicOperator.pasteSchematic(Base.unclaimedSchematic, new Location(Bukkit.getWorld(this.world), this.x - 5, this.y + 4, this.z + 3));
         this.members.clear();

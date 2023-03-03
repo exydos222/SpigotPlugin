@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -70,6 +71,28 @@ public class EventListener implements Listener {
     private static HashSet<Vector> lootedPlacedCars = new HashSet<>();
     
     protected static HashSet<MinedBlockData> minedBlocks = new HashSet<>();
+    
+    @EventHandler
+    public void onExplosion(final EntityExplodeEvent e) {
+        e.setCancelled(true);
+        for (final Base base : Base.bases)
+            if (base.owner != null && base.isInUnclaimedBaseRegion(e.getLocation())) {
+                base.health -= Base.unclaimedSchematic.sizeX - Math.abs(e.getLocation().getX() - base.x) + Base.unclaimedSchematic.sizeY - Math.abs(e.getLocation().getY() - base.y) + Base.unclaimedSchematic.sizeX - Math.abs(e.getLocation().getZ() - base.z);
+                if (base.health <= 0)
+                    base.disbandDueToRaid();
+                if (base.secondsWithoutRaid > 300) {
+                    for (final BaseMember member : base.members) {
+                        final Player player = Bukkit.getPlayer(member.uuid);
+                        if (player != null)
+                            player.sendMessage("Your base named \'" + base.name + "\' is being raided.");
+                    }
+                    final Player owner = Bukkit.getPlayer(base.owner);
+                    if (owner != null)
+                        owner.sendMessage("Your base named \'" + base.name + "\' is being raided.");
+                }
+                base.secondsWithoutRaid = 0;
+            }
+    }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(final PlayerJoinEvent e)

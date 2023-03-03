@@ -34,6 +34,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import objects.bases.Base;
+import objects.bases.BaseMember;
 import objects.region.Region;
 import objects.region.RegionOperator;
 
@@ -172,11 +173,29 @@ public class Main extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
+                for (final Base base : Base.bases) {
+                    base.secondsWithoutRaid = (short)Math.min(Short.MAX_VALUE, base.secondsWithoutRaid + 1);
+                    if (base.secondsWithoutRaid == 300) {
+                        for (final BaseMember member : base.members) {
+                            final Player player = Bukkit.getPlayer(member.uuid);
+                            if (player != null)
+                                player.sendMessage("Your base named \'" + base.name + "\' is no longer being raided and will now start regenerating health.");
+                        }
+                        final Player owner = Bukkit.getPlayer(base.owner);
+                        if (owner != null)
+                            owner.sendMessage("Your base named \'" + base.name + "\' is being raided.");
+                        base.health = (short)Math.min(base.level * 1000, base.health + base.level ^ 2);
+                    } else if (base.secondsWithoutRaid > 300)
+                        base.health = (short)Math.min(base.level * 1000, base.health + base.level ^ 2);
+                }
                 for (final Player player : getServer().getOnlinePlayers()) {
+                    for (final Base base : Base.bases)
+                        if (base.name != null && base.isInUnclaimedBaseRegion(player.getLocation()))
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + base.name + " | " + base.health + '/' + base.level * 1000 + "HP"));
                     final Region inInfectedZone = RegionOperator.isInsideAnyRegionWithANameStartingWith(player, "Infected");
                     final PlayerSaveData data = PlayerSessionData.PlayerData.get(player.getUniqueId()).savedata;
                     if (inInfectedZone != null) {
-                        final double infectionStrength = Math.max(0, RegionOperator.distanceToCenterInversedScaled(inInfectedZone, player, 5) - ((player.getInventory().getBoots() != null && player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS) ? 1 : 0) -
+                        final double infectionStrength = Math.max(0, RegionOperator.distanceToCenterInversedScaled(inInfectedZone, player.getLocation(), 5) - ((player.getInventory().getBoots() != null && player.getInventory().getBoots().getType() == Material.GOLDEN_BOOTS) ? 1 : 0) -
                                 ((player.getInventory().getLeggings() != null && player.getInventory().getLeggings().getType() == Material.GOLDEN_LEGGINGS) ? 1 : 0) -
                                 ((player.getInventory().getChestplate() != null && player.getInventory().getChestplate().getType() == Material.GOLDEN_CHESTPLATE) ? 1 : 0) -
                                 ((player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GOLDEN_HELMET) ? 1 : 0));

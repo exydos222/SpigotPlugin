@@ -9,14 +9,14 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 
 public class PMCommand implements CommandExecutor {
-	
-	@Override
-	public final boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-		switch (args.length) {
-		case 0:
-		    sender.sendMessage("You did not specify a player.");
-		    break;
-		case 1:
+    
+    @Override
+    public final boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        switch (args.length) {
+        case 0:
+            sender.sendMessage("You did not specify a player.");
+            break;
+        case 1:
             sender.sendMessage("You did not specify a message.");
             break;
         default:
@@ -31,8 +31,8 @@ public class PMCommand implements CommandExecutor {
             }
             sender.sendMessage(ChatColor.of("#0E7C61") + "You " + ChatColor.WHITE + "to " + player.getDisplayName() + ChatColor.WHITE + ": " + args[1]);
             player.sendMessage(((Player)sender).getDisplayName() + " §fto "+ChatColor.of("#0E7C61") + "You§f: " + args[1]);       
-		}
-		return true;
-	}
-	
+        }
+        return true;
+    }
+    
 }
